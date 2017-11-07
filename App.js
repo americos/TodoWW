@@ -1,18 +1,19 @@
-import React from 'react';
+// @flow
+import * as React from 'react';
 import { StyleSheet, Text, View, FlatList, TextInput, Button } from 'react-native';
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      newTodoText: '',
-      todos: [
-        { id: 1, text: 'Read the News' },
-        { id: 2, text: 'Play golf' },
-        { id: 3, text: 'Drink a beer' }
-      ]
-    };
-  }
+type Props = {};
+type Todo = {
+  id: number,
+  text: string
+};
+type State = {
+  newTodoText: string,
+  todos: Array<Todo>
+};
+export default class App extends React.Component<Props, State> {
+  state: State
+  _input: ?TextInput
 
   render() {
     return (
@@ -27,12 +28,12 @@ export default class App extends React.Component {
         />
         <Button
           onPress={() => {
-            const nextId = this.state.todos.reduce((a, b) => a.id > b.id ? a.id : b.id) + 1;
+            const nextId = this.state.todos.reduce((max_id, i) => { return max_id > i.id ? max_id : i.id }, 0) + 1;
             this.setState({ 
               newTodoText: '',
               todos: this.state.todos.concat({ id: nextId, text: this.state.newTodoText }),
             })
-            this._input.clear()
+            this._input && this._input.clear()
           }}
           title="Add Todo"
           color="#841584"
@@ -41,8 +42,8 @@ export default class App extends React.Component {
         />
         <FlatList
           data={this.state.todos}
-          renderItem={({item}) => <Text key={item.id} style={styles.item}>{item.text}</Text>}
-          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <Text key={item.id} style={styles.item}>{item.text}</Text>}
+          keyExtractor={(item) => item.id.toString()}
         />
       </View>
     );
